@@ -4,6 +4,7 @@ import os
 from test_runner.ui import TestRunnerUI
 from test_runner.benchmark_result import BenchmarkResult
 import random
+import yaml
 
 def gen_benchmark_args() -> list[tuple[str, str, str, str, int]]:
     size_to_num_updates = {
@@ -39,12 +40,18 @@ def gen_benchmark_args() -> list[tuple[str, str, str, str, int]]:
 
     return benchmark_args
 
+
+def gen_benchmarks_from_config() -> None:
+    yaml_dict = yaml.safe_load(open("../config.yaml"))
+    print(yaml_dict)
+
+
 def run_benchmark(benchmark_results: dict[str, BenchmarkResult],
                   executable: str,
                   scenario_path: str,
                   scenario_name: str,
                   scenario_type: str,
-                  num_updates: int):
+                  num_updates: int) -> None:
 
     command_args = [executable,
                     "-batchmode",
@@ -99,22 +106,25 @@ def write_benchmark_heading(file_name: str, scenario_name: str) -> None:
         log.write(f"### BENCHMARK FOR: {scenario_name}\n")
         log.write("######################################################\n")
 
-def main():
-    write_log_heading("logs.txt")
-    benchmark_args = gen_benchmark_args()
-    benchmark_results = dict()
-    for arg in benchmark_args:
-        benchmark_results[arg[2]] = BenchmarkResult(result=-1, start_time=-1, time_elapsed=-1, status="Not Started", num_iterations=arg[4], correct="N/A")
+# def main():
+#     write_log_heading("logs.txt")
+#     benchmark_args = gen_benchmark_args()
+#     benchmark_results = dict()
+#     for arg in benchmark_args:
+#         benchmark_results[arg[2]] = BenchmarkResult(result=-1, start_time=-1, time_elapsed=-1, status="Not Started", num_iterations=arg[4], correct="N/A")
+#
+#     with TestRunnerUI(benchmark_results) as ui:
+#         for benchmark_arg in benchmark_args:
+#             scenario_name = benchmark_arg[2]
+#             ui.execute_benchmark(scenario_name)
+#             write_benchmark_heading("logs.txt", scenario_name)
+#             run_benchmark(benchmark_results, *benchmark_arg)
+#             ui.complete_benchmark(scenario_name)
+#         ui.finish()
+#         time.sleep(1)
 
-    with TestRunnerUI(benchmark_results) as ui:
-        for benchmark_arg in benchmark_args:
-            scenario_name = benchmark_arg[2]
-            ui.execute_benchmark(scenario_name)
-            write_benchmark_heading("logs.txt", scenario_name)
-            run_benchmark(benchmark_results, *benchmark_arg)
-            ui.complete_benchmark(scenario_name)
-        ui.finish()
-        time.sleep(1)
+def main():
+    gen_benchmarks_from_config()
 
 if __name__ == "__main__":
     main()

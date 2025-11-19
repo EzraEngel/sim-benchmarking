@@ -1,0 +1,83 @@
+# Welcome to the ABM benchmarking suite. You can configure the test runner here
+# by specifying which configuration files you'd like to execute and which sizes they
+# should execute on.
+
+# *YOUR SIMULATION MUST ACCEPT AND PARSE THE FOLLOWING TWO COMMAND LINE ARGS*
+#    "-numUpdates <UPDATES>"
+#    "-scenarioPath <PATH>"
+
+# ------------------------------------------------------------------------------------
+# --- DEFAULTS ---
+# Use these anchors to define settings shared across multiple simulation groups.
+# You can override any of these settings in the specific group below.
+# ------------------------------------------------------------------------------------
+defaults:
+  executable: &default_executable 'DOTSBuild\Benchmarks.exe'
+
+  # Default command-line arguments. Flags without values should be 'null'.
+  clargs: &default_clargs
+    -batchmode: null
+    -nographics: null
+    -logfile: "-" # Log to stdout for harness capture
+
+  # Default mapping of simulation sizes to the number of updates.
+  sizes: &default_sizes
+    sm: 10000
+    md: 1000
+    lg: 100
+    xl: 10
+
+# ------------------------------------------------------------------------------------
+# --- SIMULATION GROUPS ---
+# Enable, disable, or modify each test group independently.
+# ------------------------------------------------------------------------------------
+
+# --------------------
+# ----- GEOMETRY -----
+# --------------------
+
+# --- Area of Interest Queries (No Line of Sight) ---
+dynamic_no_los:
+  run: true
+  executable: *default_executable
+  clargs:
+    <<: *default_clargs
+    -scenarioType: "GEO_NO_LOS"
+  sizes: *default_sizes
+  distributions:
+    - normal
+    - uniform
+
+static_no_los:
+  run: true
+  executable: *default_executable
+  clargs:
+    <<: *default_clargs
+    -scenarioType: "GEO_NO_LOS"
+  sizes: *default_sizes
+  distributions:
+    - normal
+    - uniform
+
+# --- Area of Interest Queries (with Line of Sight) ---
+dynamic_los:
+  run: true
+  executable: *default_executable
+  clargs:
+    <<: *default_clargs
+    -scenarioType: "GEO_LOS"
+  sizes: *default_sizes
+  distributions:
+    - normal
+    - uniform
+
+static_los:
+  run: true
+  executable: *default_executable
+  clargs:
+    <<: *default_clargs
+    -scenarioType: "GEO_LOS"
+  sizes: *default_sizes
+  distributions:
+    - normal
+    - uniform
