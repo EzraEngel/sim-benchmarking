@@ -12,6 +12,7 @@ def gen_benchmarks_from_config() -> list[dict[str, Any]]:
     benchmark_args = []
     for config_name, config_params in yaml_dict.items():
         if config_name == "defaults": continue
+        if not config_params["run"]: continue
         for distribution in config_params["distributions"]:
             directory = os.path.join(os.getcwd(), "benchmarks", "geometry", f"{distribution}_{config_name}")
             for size, num_updates in config_params["sizes"].items():
@@ -25,7 +26,6 @@ def gen_benchmarks_from_config() -> list[dict[str, Any]]:
                 clargs = clargs | config_params["clargs"]
                 benchmark_args.append(clargs)
     return benchmark_args
-
 
 
 def run_benchmark(benchmark_results: dict[str, BenchmarkResult], clargs : dict) -> None:
@@ -100,9 +100,6 @@ def main():
             ui.complete_benchmark(scenario_name)
         ui.finish()
         time.sleep(1)
-
-# def main():
-#     gen_benchmarks_from_config()
 
 if __name__ == "__main__":
     main()
