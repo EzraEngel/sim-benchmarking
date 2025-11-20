@@ -34,7 +34,7 @@ def run_benchmark(benchmark_results: dict[str, BenchmarkResult], clargs : dict) 
     clargs_list = list()
     clargs_list.append(clargs["executable"])
     for specifier, arg in clargs.items():
-        if specifier == "executable":
+        if specifier in "executable":
             continue
         clargs_list.append(specifier)
         if arg:
