@@ -11,13 +11,6 @@ class SimObject:
     rotation: Float4
     random_seed: int
 
-    def set_random_position(self, first: Float3, second: Float3, distribution: str) -> None:
-        match distribution:
-            case 'uniform':
-                self.position = Float3.from_uniform(first, second)
-            case 'normal':
-                self.position = Float3.from_normal(first, second)
-
     @staticmethod
     def write_objects(filename: str, **entity_lists) -> None:
         json_dict = dict()
