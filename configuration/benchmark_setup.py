@@ -1,14 +1,15 @@
 import os
 import random
-from typing import Callable, Any
-from geometry.float3 import Float3
+from typing import Any, Union
 from sim_objects.agent import Agent
 from sim_objects.occluder import Occluder
 from sim_objects.base import SimObject
-from utils.sim_world import get_area_from_desired_target_num, get_normal_from_desired_target_num
 import copy
+from utils.distribution_builder import DistributionBuilder
 
-distribution_generator = Callable[[int, int, float, float], tuple[Float3, Float3, str]]
+
+type WriterArgs = dict[str, Union[str, int]]
+
 class BenchmarkSetup:
     benchmark_dirs = [
         os.path.join("benchmarks", "geometry", "uniform_static_no_los"),
@@ -36,18 +37,17 @@ class BenchmarkSetup:
                 os.makedirs(benchmark_dir)
 
     @staticmethod
-    def generate_geometric_benchmark_jobs(sim_size, writer_args) -> list[dict[str, Any]]:
+    def generate_geometric_benchmark_jobs(sim_size: dict[str, int], writer_args: WriterArgs) -> list[WriterArgs]:
         # --- Be wary of changing these unless you make updates to the hardcoded directory structure ---
         distributions = ["uniform", "normal"]
         movements = ["static", "dynamic"]
         los_strs = ["los", "no_los"]
 
-        # --- Distribution generators ---
-        generators: dict[str, distribution_generator] = {
-            "uniform": get_area_from_desired_target_num,
-            "normal": get_normal_from_desired_target_num
-        }
-        writer_args['dist_generator'] = generators
+        desired_targets_per_sensor: int
+        num_agents: int
+        fov: float
+        view_range: float
+
 
         job_list: list[dict[str, Any]] = []
         # --- Write all the benchmark configs ---
@@ -76,23 +76,26 @@ class BenchmarkSetup:
                         shape: str,
                         targets_per_sensor: int,
                         dist: str,
-                        dist_generator: dict[str, distribution_generator],
                         los: str):
 
         # --- Set the random seed ---
         random.seed(random_seed)
 
+        # --- Build the distribution from scenario ---
+        distribution_builder = DistributionBuilder(targets_per_sensor, num_agents, fov, view_range)
+        if dist == "uniform":
+            distribution = distribution_builder.build_uniform()
+        elif dist == "normal":
+            distribution = distribution_builder.build_gauss()
+        else:
+            raise NotImplementedError
+
         # --- Make and write the Agents ---
-        agents = [Agent.random(speed=speed, view_range=view_range, fov=fov) for i in range(num_agents)]
-        dist_params = dist_generator[dist](targets_per_sensor, num_agents, fov, view_range)
-        for agent in agents:
-            agent.set_random_position(*dist_params)
+        agents = [Agent.random(distribution=distribution, speed=speed, view_range=view_range, fov=fov) for i in range(num_agents)]
         if los == "no_los":
             SimObject.write_objects(file_path, agents=agents)
             return
 
         # --- Make and write the occluders ---
-        occluders = [Occluder.random(scale=scale, shape=shape) for i in range(occ_per_agent * num_agents)]
-        for occluder in occluders:
-            occluder.set_random_position(*dist_params)
+        occluders = [Occluder.random(distribution=distribution, scale=scale, shape=shape) for i in range(occ_per_agent * num_agents)]
         SimObject.write_objects(file_path, agents=agents, occluders=occluders)

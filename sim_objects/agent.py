@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from geometry.float3 import Float3
 from geometry.float4 import Float4
 from sim_objects.base import SimObject
+from utils.distributions import SpatialDistribution
 
 
 @dataclass
@@ -13,8 +14,8 @@ class Agent(SimObject):
     field_of_view: float
 
     @classmethod
-    def random(cls, speed: float, view_range: float, fov: float) -> 'Agent':
-        position = Float3()
+    def random(cls, distribution: SpatialDistribution, speed: float, view_range: float, fov: float) -> 'Agent':
+        position = distribution.get_float3()
         look_direction = Float3.point_on_unit_sphere()
         rotation = Float4.from_axis(look_direction)
         random_seed = random.randint(0, 1000000000)

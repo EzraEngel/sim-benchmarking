@@ -24,12 +24,7 @@ class Float3:
 
     @classmethod
     def point_on_unit_sphere(cls) -> 'Float3':
-        theta = random.uniform(0, math.pi)
-        phi = random.uniform(0, 2 * math.pi)
-        x = math.sin(theta) * math.cos(phi)
-        y = math.sin(theta) * math.sin(phi)
-        z = math.cos(theta)
-        return cls(x, y, z)
+        return cls.from_normal(cls.zero(), cls.one()).normalized()
 
     @classmethod
     def zero(cls) -> 'Float3':
