@@ -10,7 +10,7 @@ class Float4:
     y: float = 0
     z: float = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         magnitude = math.sqrt(self.w**2 + self.x**2 + self.y**2 + self.z**2)
         if not math.isclose(magnitude, 1):
             raise ValueError(f"Quaternions must have magnitude 1.")

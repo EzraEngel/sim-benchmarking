@@ -1,9 +1,9 @@
-from configuration.benchmark_setup import BenchmarkSetup
+from configuration.benchmark_setup import BenchmarkSetup, WriterArgs
 from multiprocessing import Process
 from typing import Any
 from configuration.ui import SetupUI
 
-def main():
+def main() -> list[WriterArgs]:
     BenchmarkSetup.set_up_benchmark_dirs()
 
     # --- Sim size corresponds to number of agents in the sim ---

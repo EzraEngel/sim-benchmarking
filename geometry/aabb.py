@@ -7,7 +7,7 @@ class AABB:
     max_f3: Float3
 
     @classmethod
-    def empty(cls):
+    def empty(cls) -> 'AABB':
         neg_inf = Float3(float("-inf"), float("-inf"), float("-inf"))
         pos_inf = Float3(float("inf"), float("inf"), float("inf"))
         return cls(pos_inf, neg_inf)

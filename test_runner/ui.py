@@ -34,30 +34,30 @@ class TestRunnerUI:
         self.display_group = Group(self.progress, self.table)
         self.live = Live(self.display_group, console=self.console, screen=False, redirect_stderr=False, vertical_overflow="visible")
 
-    def __enter__(self):
+    def __enter__(self) -> 'TestRunnerUI':
         self.welcome()
         self.live.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.live.stop()
 
     def welcome(self) -> None:
         self.console.print(self.welcome_panel)
         self.console.print(f"Found [bold yellow]{self.num_tests}[/bold yellow] benchmark scenarios to run.")
 
-    def execute_benchmark(self, scenario_name: str):
+    def execute_benchmark(self, scenario_name: str) -> None:
         self.benchmark_results[scenario_name].status = "Executing"
         self.table = self._generate_results_table()
         self.live.update(Group(self.progress, self.table))
 
-    def complete_benchmark(self, scenario_name: str):
+    def complete_benchmark(self, scenario_name: str) -> None:
         self.benchmark_results[scenario_name].status = "Finished"
         self.progress.update(self.task_id, advance=1)
         self.table = self._generate_results_table()
         self.live.update(Group(self.progress, self.table))
 
-    def finish(self):
+    def finish(self) -> None:
         self.progress.update(self.task_id, description="[bold green]All benchmarks complete!")
 
     @staticmethod

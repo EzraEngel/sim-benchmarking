@@ -84,7 +84,7 @@ def write_benchmark_heading(file_name: str, scenario_name: str) -> None:
         log.write(f"### BENCHMARK FOR: {scenario_name}\n")
         log.write("######################################################\n")
 
-def main():
+def main() -> None:
     write_log_heading("logs.txt")
     benchmark_args = gen_benchmarks_from_config()
     benchmark_results = dict()

@@ -33,7 +33,7 @@ class SetupUI:
         self.console.print(self.welcome_panel)
         self.console.print(f"Found [bold yellow]{self.num_jobs}[/bold yellow] benchmark scenarios to generate.")
 
-    def poll(self):
+    def poll(self) -> None:
         self.start_time = time.time()
         with Progress(*self.progress_columns, console=self.console) as progress:
             task = progress.add_task("[green]Generating scenarios...", total=self.num_jobs)
@@ -48,6 +48,6 @@ class SetupUI:
                 time.sleep(0.1)
         self.end_time = time.time()
 
-    def finish(self):
+    def finish(self) -> None:
         self.console.print(
             f"\n[bold green]✓ Successfully finished building {self.num_jobs} benchmarks in {self.end_time - self.start_time:.2f} seconds.[/bold green]")
