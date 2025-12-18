@@ -67,11 +67,6 @@ class BenchmarkSetup:
         movements = [MoveType.STATIC, MoveType.DYNAMIC]
         los_strs = [LOSType.LOS, LOSType.NO_LOS]
 
-        desired_targets_per_sensor: int
-        num_agents: int
-        fov: float
-        view_range: float
-
         job_list: list[dict[str, Any]] = []
         # --- Write all the benchmark configs ---
         for dist in distributions:
