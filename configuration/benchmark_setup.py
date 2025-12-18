@@ -5,12 +5,24 @@ from sim_objects.agent import Agent
 from sim_objects.occluder import Occluder
 from sim_objects.base import SimObject
 import copy
-
+from enum import StrEnum, auto
 from sim_objects.sensor import SphericalSectorSensor
 from utils.distribution_builder import DistributionBuilder
 
 
 type WriterArgs = dict[str, Union[str, int]]
+
+class DistType(StrEnum):
+    UNIFORM = auto()
+    NORMAL = auto()
+
+class MoveType(StrEnum):
+    STATIC = auto()
+    DYNAMIC = auto()
+
+class LOSType(StrEnum):
+    LOS = auto()
+    NO_LOS = auto()
 
 class BenchmarkSetup:
     """
@@ -51,9 +63,9 @@ class BenchmarkSetup:
         without corresponding changes to the directory structure.
         """
 
-        distributions = ["uniform", "normal"]
-        movements = ["static", "dynamic"]
-        los_strs = ["los", "no_los"]
+        distributions = [DistType.UNIFORM, DistType.NORMAL]
+        movements = [MoveType.STATIC, MoveType.DYNAMIC]
+        los_strs = [LOSType.LOS, LOSType.NO_LOS]
 
         desired_targets_per_sensor: int
         num_agents: int
@@ -86,8 +98,8 @@ class BenchmarkSetup:
                         scale: float,
                         shape: str,
                         targets_per_sensor: int,
-                        dist: str,
-                        los: str) -> None:
+                        dist: DistType,
+                        los: LOSType) -> None:
         """
         This is the callable which is dispatched to the multiprocessing module. The scrip in __main__.py will fork
         the process and execute this method in the child. It takes an unpacked set of writer arguments as parameters
@@ -102,16 +114,16 @@ class BenchmarkSetup:
 
         # --- Build the distribution from scenario ---
         distribution_builder = DistributionBuilder(num_agents)
-        if dist == "uniform":
+        if dist == DistType.UNIFORM:
             distribution = distribution_builder.build_uniform_from_sensor_and_targets(sensor, targets_per_sensor)
-        elif dist == "normal":
+        elif dist == DistType.NORMAL:
             distribution = distribution_builder.build_gauss_from_sensor_and_targets(sensor, targets_per_sensor)
         else:
             raise NotImplementedError
 
         # --- Make and write the Agents ---
         agents = [Agent.random(distribution=distribution, speed=speed, sensor=sensor) for i in range(num_agents)]
-        if los == "no_los":
+        if los == LOSType.NO_LOS:
             SimObject.write_objects(file_path, agents=agents)
             return
 
