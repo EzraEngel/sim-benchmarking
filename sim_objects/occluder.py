@@ -1,9 +1,10 @@
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from geometry.float3 import Float3
 from geometry.float4 import Float4
 from sim_objects.base import SimObject
 from utils.distributions import SpatialDistribution
+from typing import Any
 
 
 @dataclass
@@ -18,3 +19,6 @@ class Occluder(SimObject):
         rotation = Float4.from_axis(orientation)
         random_seed = random.randint(0, 1000000000)
         return cls("occluder", position, rotation, random_seed, scale, shape)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)

@@ -5,6 +5,8 @@ from sim_objects.agent import Agent
 from sim_objects.occluder import Occluder
 from sim_objects.base import SimObject
 import copy
+
+from sim_objects.sensor import SphericalSectorSensor
 from utils.distribution_builder import DistributionBuilder
 
 
@@ -76,22 +78,25 @@ class BenchmarkSetup:
                         shape: str,
                         targets_per_sensor: int,
                         dist: str,
-                        los: str):
+                        los: str) -> None:
 
         # --- Set the random seed ---
         random.seed(random_seed)
 
+        # --- Build the sensor ---
+        sensor = SphericalSectorSensor(view_range=view_range, field_of_view=fov)
+
         # --- Build the distribution from scenario ---
-        distribution_builder = DistributionBuilder(targets_per_sensor, num_agents, fov, view_range)
+        distribution_builder = DistributionBuilder(num_agents)
         if dist == "uniform":
-            distribution = distribution_builder.build_uniform()
+            distribution = distribution_builder.build_uniform_from_sensor_and_targets(sensor, targets_per_sensor)
         elif dist == "normal":
-            distribution = distribution_builder.build_gauss()
+            distribution = distribution_builder.build_gauss_from_sensor_and_targets(sensor, targets_per_sensor)
         else:
             raise NotImplementedError
 
         # --- Make and write the Agents ---
-        agents = [Agent.random(distribution=distribution, speed=speed, view_range=view_range, fov=fov) for i in range(num_agents)]
+        agents = [Agent.random(distribution=distribution, speed=speed, sensor=sensor) for i in range(num_agents)]
         if los == "no_los":
             SimObject.write_objects(file_path, agents=agents)
             return
