@@ -4,7 +4,7 @@ This repository contains the reference test harness for the **"Beyond Entity Cou
 
 ## Prerequisites
 
-*   Python 3.8+
+*   Python 3.12+
 *   PyYAML (`pip install pyyaml`)
 
 ## Project Structure
