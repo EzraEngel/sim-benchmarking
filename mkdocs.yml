@@ -1,0 +1,25 @@
+site_name: SimBench Docs
+theme:
+  name: "material"
+  palette:
+    scheme: slate
+    primary: teal
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_root_heading: true
+            show_source: true
+
+nav:
+  - Home: index.md
+  - Reference:
+      - Sim Objects: reference/sim_objects.md
+      - Geometry: reference/geometry.md
+      - Configuration: reference/configuration.md
+      - Harness: reference/harness.md
+      - Utils: reference/utils.md

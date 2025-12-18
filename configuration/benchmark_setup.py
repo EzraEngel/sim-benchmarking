@@ -13,14 +13,17 @@ from utils.distribution_builder import DistributionBuilder
 type WriterArgs = dict[str, Union[str, int]]
 
 class DistType(StrEnum):
+    """ Distribution type. """
     UNIFORM = auto()
     NORMAL = auto()
 
 class MoveType(StrEnum):
+    """ Movement tpe (static or dynamic). """
     STATIC = auto()
     DYNAMIC = auto()
 
 class LOSType(StrEnum):
+    """ Line of sight type (whether simulation supports LOS checks). """
     LOS = auto()
     NO_LOS = auto()
 
