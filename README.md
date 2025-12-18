@@ -13,6 +13,15 @@ This repository contains the reference test harness for the **"Beyond Entity Cou
 *   `test_runner.py`: The core harness logic that executes the simulation and verifies results.
 *   `config.yaml`: User-defined settings for executable paths and arguments.
 
+```mermaid
+graph TD
+    A[BenchmarkSetup] -->|Generates JSON| B(Disk)
+    C[TestRunner] -->|Spawns| D[Subprocess]
+    D -->|Reads JSON| E[Simulation Logic]
+    E -->|Stdout Pipe| C
+    C -->|Real-time Parse| F[Results UI]
+```
+
 ## Workflow
 
 ### 1. Generate Benchmark Scenarios
