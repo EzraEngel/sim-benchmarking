@@ -7,6 +7,11 @@ from rich.panel import Panel
 from rich.text import Text
 
 class SetupUI:
+    """
+    Represents the terminal-based UI and related methods to provide the user feedback during configuration. Because
+    configuration and build can take around 30 seconds on moderately powered desktop, this feedback is important.
+    """
+
     welcome_message = Text("Welcome to the ABM Simulation Benchmark Generator", justify="center", style="bold green")
     welcome_panel = Panel(welcome_message, title="[bold cyan]Setup[/bold cyan]", border_style="cyan")
     progress_columns = [

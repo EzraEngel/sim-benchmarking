@@ -4,6 +4,13 @@ from typing import Any
 from configuration.ui import SetupUI
 
 def main() -> list[WriterArgs]:
+    """
+    This method exists only as an access point to control the configuration of the scenario builder.
+    First, it sets up the directory structure. Then, the user can define sizes and parameters. Then,
+    it returns a list of jobs to run. We return a list of jobs, because generating the configs can
+    actually take quite a long time without multithreading support. The multithreading support is
+    baked into the module itself at the bottom of this file.
+    """
     BenchmarkSetup.set_up_benchmark_dirs()
 
     # --- Sim size corresponds to number of agents in the sim ---

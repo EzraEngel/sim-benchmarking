@@ -13,6 +13,11 @@ from utils.distribution_builder import DistributionBuilder
 type WriterArgs = dict[str, Union[str, int]]
 
 class BenchmarkSetup:
+    """
+    This is a class that holds most of the methods and parameterization for the benchmark configuration.
+    It defines a directory structure, and calls a series of methods to instantiate the correct objects and
+    dump them into json files.
+    """
     benchmark_dirs = [
         os.path.join("benchmarks", "geometry", "uniform_static_no_los"),
         os.path.join("benchmarks", "geometry", "uniform_static_los"),
@@ -34,13 +39,18 @@ class BenchmarkSetup:
 
     @staticmethod
     def set_up_benchmark_dirs() -> None:
+        """ Sets up the directory structure on the host. """
         for benchmark_dir in BenchmarkSetup.benchmark_dirs:
             if not os.path.exists(benchmark_dir):
                 os.makedirs(benchmark_dir)
 
     @staticmethod
     def generate_geometric_benchmark_jobs(sim_size: dict[str, int], writer_args: WriterArgs) -> list[WriterArgs]:
-        # --- Be wary of changing these unless you make updates to the hardcoded directory structure ---
+        """
+        Generates a list of benchmark jobs to run in parallel. Be wary of modifying the hardcoded parameters below
+        without corresponding changes to the directory structure.
+        """
+
         distributions = ["uniform", "normal"]
         movements = ["static", "dynamic"]
         los_strs = ["los", "no_los"]
@@ -49,7 +59,6 @@ class BenchmarkSetup:
         num_agents: int
         fov: float
         view_range: float
-
 
         job_list: list[dict[str, Any]] = []
         # --- Write all the benchmark configs ---
@@ -79,6 +88,11 @@ class BenchmarkSetup:
                         targets_per_sensor: int,
                         dist: str,
                         los: str) -> None:
+        """
+        This is the callable which is dispatched to the multiprocessing module. The scrip in __main__.py will fork
+        the process and execute this method in the child. It takes an unpacked set of writer arguments as parameters
+        which you can observe in the __main__.py file.
+        """
 
         # --- Set the random seed ---
         random.seed(random_seed)
