@@ -7,7 +7,11 @@ from test_runner.benchmark_result import BenchmarkResult
 from typing import Any
 import yaml
 
-def gen_benchmarks_from_config() -> list[dict[str, Any]]:
+type BenchmarkArgs = dict[str, Any]
+type ScenarioName = str
+
+def gen_benchmarks_from_config() -> list[BenchmarkArgs]:
+    """ Parses the yaml config file and writes the benchmark jobs to a list. """
     yaml_dict = yaml.safe_load(open("config.yaml"))
     benchmark_args = []
     for config_name, config_params in yaml_dict.items():
@@ -28,8 +32,16 @@ def gen_benchmarks_from_config() -> list[dict[str, Any]]:
     return benchmark_args
 
 
-def run_benchmark(benchmark_results: dict[str, BenchmarkResult], clargs : dict) -> None:
+def run_benchmark(benchmark_results: dict[ScenarioName, BenchmarkResult], clargs: BenchmarkArgs) -> None:
+    """
+    This method does a few things. Most importantly, it forks and executes the benchmark run with the provided BenchmarkArgs.
+    When it forks the process with the subprocess module, it sets up a pipe to intercept standard output from the child process.
+    It blocks on that pipe, and waits for appropriate flags in order to start and stop a timer, and parse the actual result.
 
+    Finally, it takes the measured wall clock time and writes it (along with some other data) to the benchmark_results dictionary.
+    This looks a bit indirect (why not just return a dictionary entry). But it ends up being much easier to modify the dictionary
+    in place to support the visual feedback in the terminal UI by doing it this way.
+    """
     scenario_name = clargs["-scenarioName"]
     clargs_list = list()
     clargs_list.append(clargs["executable"])
@@ -47,16 +59,19 @@ def run_benchmark(benchmark_results: dict[str, BenchmarkResult], clargs : dict) 
     end_time = 0.0
     result = None
 
-    for line in process.stdout:
-        if "### START BENCHMARK ###" in line:
-            start_time = time.perf_counter()
-        if "### END BENCHMARK ###" in line:
-            end_time = time.perf_counter()
-        if "### QUERY RESULT" in line:
-            result = int(line.split("|")[1])
-
-        with open("logs.txt", "a") as log:
+    with open("logs.txt", "a") as log:
+        for line in process.stdout:
+            if "### START BENCHMARK ###" in line:
+                start_time = time.perf_counter()
+            elif "### END BENCHMARK ###" in line:
+                end_time = time.perf_counter()
+            elif "### QUERY RESULT" in line:
+                try:
+                    result = int(line.split("|")[1])
+                except (IndexError, ValueError):
+                    pass
             log.write(line)
+            log.flush()
 
     stderr_output = process.stderr.read()
     if stderr_output:
@@ -72,6 +87,7 @@ def run_benchmark(benchmark_results: dict[str, BenchmarkResult], clargs : dict) 
 
 
 def write_log_heading(file_name: str) -> None:
+    """ Writes a log heading. """
     with open(file_name, "w") as log:
         log.write("######################################################\n")
         log.write("################## BENCHMARK LOGS ####################\n")
@@ -79,12 +95,17 @@ def write_log_heading(file_name: str) -> None:
         log.write("------------------------------------------------------\n")
 
 def write_benchmark_heading(file_name: str, scenario_name: str) -> None:
+    """ Writes an individual benchmark heading. """
     with open(file_name, "a") as log:
         log.write("######################################################\n")
         log.write(f"### BENCHMARK FOR: {scenario_name}\n")
         log.write("######################################################\n")
 
 def main() -> None:
+    """
+    Generates the appropriate benchmarks by parsing the config.yaml and then runs them one by one. Provides visual feedback to
+    user through the TestRunnerUI object.
+    """
     write_log_heading("logs.txt")
     benchmark_args = gen_benchmarks_from_config()
     benchmark_results = dict()

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import random
 
 class SpatialDistribution(ABC):
+    """ Abstract class to implement spatial distributions. """
     @abstractmethod
     def get_float3(self) -> Float3:
         pass
@@ -11,10 +12,12 @@ class SpatialDistribution(ABC):
 
 @dataclass
 class UniformSpatialDistribution(SpatialDistribution):
+    """ A uniform spatial distribution. """
     min_f3: Float3
     max_f3: Float3
 
     def get_float3(self) -> Float3:
+        """ Generates the next float3 from the uniform distribution. """
         x = random.uniform(self.min_f3.x, self.max_f3.x)
         y = random.uniform(self.min_f3.y, self.max_f3.y)
         z = random.uniform(self.min_f3.z, self.max_f3.z)
@@ -23,10 +26,12 @@ class UniformSpatialDistribution(SpatialDistribution):
 
 @dataclass
 class GaussianSpatialDistribution(SpatialDistribution):
+    """ A gaussian spatial distribution. """
     mu: Float3
     sigma: Float3
 
     def get_float3(self) -> Float3:
+        """ Generates the next float3 from the gaussian distribution. """
         x = random.gauss(self.mu.x, self.sigma.x)
         y = random.gauss(self.mu.y, self.sigma.y)
         z = random.gauss(self.mu.z, self.sigma.z)

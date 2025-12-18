@@ -9,11 +9,13 @@ from typing import Any
 
 @dataclass
 class Occluder(SimObject):
+    """ Represents a piece of static geometry which occludes line of sight checks. """
     scale: float
     shape: str
 
     @classmethod
     def random(cls, distribution: SpatialDistribution, scale: float, shape: str) -> 'Occluder':
+        """ Generate a random occluder from the given distribution. """
         position = distribution.get_float3()
         orientation = Float3.point_on_unit_sphere()
         rotation = Float4.from_axis(orientation)
@@ -21,4 +23,5 @@ class Occluder(SimObject):
         return cls("occluder", position, rotation, random_seed, scale, shape)
 
     def to_dict(self) -> dict[str, Any]:
+        """ Returns a dict representation of the object. """
         return asdict(self)

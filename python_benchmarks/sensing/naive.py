@@ -4,6 +4,9 @@ import math
 from python_benchmarks.sensing.utils import can_sensor_see_target
 
 def get_targets_no_los(agents: list[agent.Agent]) -> int:
+    """
+    A brute force algorithm to find targets *without* line of sight checks.
+    """
     num_targets = 0
     for sensor in agents:
         for target in agents:
@@ -12,4 +15,7 @@ def get_targets_no_los(agents: list[agent.Agent]) -> int:
     return num_targets
 
 def get_targets_with_los(agents: list[agent.Agent], occluders: list[occluder.Occluder]) -> int:
+    """
+    A brute force algorithm to find targets *with* line of sight checks. (Stub).
+    """
     return 0

@@ -7,6 +7,10 @@ from rich.panel import Panel
 from rich.text import Text
 
 class TestRunnerUI:
+    """
+    Represents the UI for the rest runner module. Provides rich visual feedback to the user about benchmarking
+    progress and results process.
+    """
     welcome_message = Text("Welcome to the ABM Simulation Benchmark Runner", justify="center", style="bold green")
     welcome_panel = Panel(welcome_message, title="[bold cyan]Benchmark Runner[/bold cyan]", border_style="cyan")
     progress_cols = [
@@ -35,44 +39,53 @@ class TestRunnerUI:
         self.live = Live(self.display_group, console=self.console, screen=False, redirect_stderr=False, vertical_overflow="visible")
 
     def __enter__(self) -> 'TestRunnerUI':
+        """ Enters the context manager. """
         self.welcome()
         self.live.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """ Exits the context manager. """
         self.live.stop()
 
     def welcome(self) -> None:
+        """ Prints the welcome message. """
         self.console.print(self.welcome_panel)
         self.console.print(f"Found [bold yellow]{self.num_tests}[/bold yellow] benchmark scenarios to run.")
 
     def execute_benchmark(self, scenario_name: str) -> None:
+        """ Updates UI to show the benchmark is executing. """
         self.benchmark_results[scenario_name].status = "Executing"
         self.table = self._generate_results_table()
         self.live.update(Group(self.progress, self.table))
 
     def complete_benchmark(self, scenario_name: str) -> None:
+        """ Updates UI to show the benchmark is complete. """
         self.benchmark_results[scenario_name].status = "Finished"
         self.progress.update(self.task_id, advance=1)
         self.table = self._generate_results_table()
         self.live.update(Group(self.progress, self.table))
 
     def finish(self) -> None:
+        """ Updates UI to show full test suite is complete. """
         self.progress.update(self.task_id, description="[bold green]All benchmarks complete!")
 
     @staticmethod
     def _get_status_style(status: str) -> str:
+        """ Helper function to style status text. """
         if status == "Finished": return "bold green"
         if status == "Executing": return "bold yellow"
         return "dim"
 
     @staticmethod
     def _get_assert_text(correct: str) -> str:
+        """ Helper function to style assertion text."""
         if correct=="true": return f"[bold green]TRUE[/]"
         elif correct=="false" : return f"[bold red]FALSE[/]"
         else: return f"[dim]N/A[/]"
 
     def _generate_results_table(self) -> Table:
+        """ Helper function to generate a table with benchmark results. """
         table = Table(show_header=True, header_style="bold magenta", title="Benchmark Results")
         table.add_column("Scenario Name", style="dim", width=45)
         table.add_column("Status")
