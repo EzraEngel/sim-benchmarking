@@ -31,5 +31,4 @@ class SimObject(ABC):
         for name, entity_list in entity_lists.items():
             json_dict[name] = [entity.to_dict() for entity in entity_list]
         with open(filename, 'w') as file:
-            json_string = json.dumps(json_dict, indent=4)
-            file.write(json_string)
+            json.dump(json_dict, file, indent=4)
