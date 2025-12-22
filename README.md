@@ -2,6 +2,8 @@
 
 This repository contains the reference test harness for the **"Beyond Entity Count"** benchmarking methodology presented at the SISO Simulation Innovation Workshop. It provides a standardized Python environment to configure scenarios, execute simulation binaries, and verify performance results against a reference implementation.
 
+[Read the Documentation](https://EzraEngel.github.io/sim-benchmarking/)
+
 ## Prerequisites
 
 *   Python 3.12+
